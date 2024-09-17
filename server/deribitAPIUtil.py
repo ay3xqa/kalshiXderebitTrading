@@ -65,6 +65,5 @@ def main_get_strike_and_mark_price(exp_date, currency):
 
     with ThreadPoolExecutor(max_workers = 10) as executor:
         results = list(executor.map(get_instrument_data, instrument_list))
-
     results = [result for result in results if result]
     return results
