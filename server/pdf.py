@@ -83,6 +83,13 @@ def get_pdf_probability_of_lte(target_price):
     probability_percentage = round(probability * 100,2)
     return probability_percentage
 
+def get_pdf_probability_of_range(lower, upper):
+    numerator, _ = quad(clipped_derivative, lower, upper)
+    denominator, _ = quad(clipped_derivative, lower_bound, upper_bound)
+    probability = numerator / denominator if denominator != 0 else 0
+    probability_percentage = round(probability * 100,2)
+    return probability_percentage
+
 #function to send over data for grpahs for UI
 def get_graph_data():
     data = {
