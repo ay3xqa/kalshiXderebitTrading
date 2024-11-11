@@ -17,20 +17,28 @@ export default function Market({kalshiData}) {
                 yes_price = {event.yes_price}
                 no_price = {event.no_price}
                 target_price = {event.target_price}
+                yes_prob = {event.yes_prob}
+                no_prob = {event.no_prob}
             />
         );
     });
     return (
-         <div className="market-container">
-            <div className="market-title" onClick={toggleMarket}>
-                {kalshiData["market_title"]}
-                <span className="toggle-icon">{isExpanded ? "▼" : "►"}</span>
-            </div>
-            {isExpanded && (
-                <div className="event-list">
-                    {events}
-                </div>
-            )}
+        <div className="market-container">
+        <div className="market-title" onClick={toggleMarket}>
+            {kalshiData["market_title"]}
+            <span className="toggle-icon">{isExpanded ? "▼" : "►"}</span>
         </div>
+        {isExpanded && (
+            <div className="event-list">
+                {kalshiData.market_data.length > 0 ? (
+                    events
+                ) : (
+                    <div className="no-events-message">
+                        No events available for this market.
+                    </div>
+                )}
+            </div>
+        )}
+    </div>
     )
 }

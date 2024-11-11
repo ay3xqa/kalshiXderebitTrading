@@ -9,10 +9,17 @@ export default function Dashboard() {
   const fetchKalshiJson = async () => {
     try {
       const response = await axios.get(
-        `http://127.0.0.1:5000/get_kalshi_max_json`
+        `http://127.0.0.1:5000/get_all_kalshi_markets_json`
       );
       // console.log(response.data); // Log the data to inspect the structure
-      setKalshiData(response.data.data); // Adjust this based on actual data structure
+      setKalshiData(response.data.data.map((market, index) => {
+        return (
+            <Market
+                key={index}
+                kalshiData={market}
+            />
+        );
+    })); // Adjust this based on actual data structure
     } catch (error) {
       console.error("Error fetching Kalshi Data:", error);
     } finally {
@@ -45,7 +52,8 @@ export default function Dashboard() {
     <>
       <div>Dashboard</div>
       {/* Pass kalshiData to Market component only when data is available */}
-      <Market kalshiData={kalshiData} />
+      {/* <Market kalshiData={kalshiData} /> */}
+      {kalshiData}
     </>
   );
 }

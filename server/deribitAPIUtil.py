@@ -1,5 +1,8 @@
 import requests
 from concurrent.futures import ThreadPoolExecutor
+import json
+import datetime
+import time
 
 # Deribit API endpoints
 base_url = "https://www.deribit.com/api/v2/"
@@ -63,7 +66,61 @@ def get_instrument_data(instrument):
 def main_get_strike_and_mark_price(exp_date, currency):
     instrument_list = fetch_instruments(exp_date=exp_date, currency=currency)
 
-    with ThreadPoolExecutor(max_workers = 10) as executor:
+    with ThreadPoolExecutor(max_workers = 3) as executor:
         results = list(executor.map(get_instrument_data, instrument_list))
+        time.sleep(1)
     results = [result for result in results if result]
     return results
+
+
+# def get_all_strike_mark_data():
+#     try:
+#         day_exp_date = (datetime.datetime.now() + datetime.timedelta(days=1)).strftime("%d%b%y").upper()
+#         year_exp_date = "27DEC24"
+#         btc_day = main_get_strike_and_mark_price(day_exp_date, "BTC")
+#         with open('BTC_day_strike_mark_data.json', 'w') as f:
+#             json.dump({"data": btc_day}, f, indent=4)
+#         eth_day = main_get_strike_and_mark_price(day_exp_date, "ETH")
+#         with open('ETH_day_strike_mark_data.json', 'w') as f:
+#             json.dump({"data": eth_day}, f, indent=4)
+#         btc_year = main_get_strike_and_mark_price(year_exp_date, "BTC")
+#         with open('BTC_year_strike_mark_data.json', 'w') as f:
+#             json.dump({"data": btc_year}, f, indent=4)         
+#         eth_year = main_get_strike_and_mark_price(year_exp_date, "ETH")
+#         with open('ETH_year_strike_mark_data.json', 'w') as f:
+#             json.dump({"data": eth_year}, f, indent=4)
+#     except Exception as e:
+#         print("Error: ", str(e))
+
+def get_all_strike_mark_data_threading():
+    try:
+        # Prepare the expiration dates
+        day_exp_date = (datetime.datetime.now() + datetime.timedelta(days=1)).strftime("%d%b%y").upper()
+        year_exp_date = "27DEC24"
+
+        # Define a helper function to handle each call and file writing
+        def process_data(exp_date, currency, filename):
+            data = main_get_strike_and_mark_price(exp_date, currency)
+            with open(filename, 'w') as f:
+                json.dump({"data": data}, f, indent=4)
+
+        # Create tasks for the executor
+        with ThreadPoolExecutor(max_workers=2) as executor:
+            # Dispatch parallel tasks for each currency and expiration date
+            futures = [
+                executor.submit(process_data, day_exp_date, "BTC", 'BTC_day_strike_mark_data.json'),
+                executor.submit(process_data, day_exp_date, "ETH", 'ETH_day_strike_mark_data.json'),
+                executor.submit(process_data, year_exp_date, "BTC", 'BTC_year_strike_mark_data.json'),
+                executor.submit(process_data, year_exp_date, "ETH", 'ETH_year_strike_mark_data.json')
+            ]
+
+            # Ensure all futures complete and capture potential exceptions
+            for future in futures:
+                try:
+                    future.result()  # Wait for each future to complete
+                except Exception as e:
+                    print("Error during execution: ", str(e))
+
+    except Exception as e:
+        print("Error: ", str(e))
+    
