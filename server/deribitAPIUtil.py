@@ -1,8 +1,10 @@
 import requests
 from concurrent.futures import ThreadPoolExecutor
 import json
-import datetime
+from datetime import datetime, timedelta
 import time
+import pytz
+
 
 # Deribit API endpoints
 base_url = "https://www.deribit.com/api/v2/"
@@ -10,6 +12,10 @@ base_url = "https://www.deribit.com/api/v2/"
 # Example endpoint to get all instruments (options data)
 instrument_endpoint = "public/get_instruments"
 mark_endpoint = "public/ticker"
+
+# Set time zone to EST
+est = pytz.timezone("America/New_York")
+now = datetime.now(est)
 
 # @brief    Retrieve mark to market price of a ticker (i.e BTC-27DEC24-10000-C -> BTC Call Expiring Dec 27 2024 with strike price of 10000)
 # @params   instrument_name: STRING -> i.e "BTC-27DEC24-10000-C"
@@ -72,30 +78,23 @@ def main_get_strike_and_mark_price(exp_date, currency):
     results = [result for result in results if result]
     return results
 
-
-# def get_all_strike_mark_data():
-#     try:
-#         day_exp_date = (datetime.datetime.now() + datetime.timedelta(days=1)).strftime("%d%b%y").upper()
-#         year_exp_date = "27DEC24"
-#         btc_day = main_get_strike_and_mark_price(day_exp_date, "BTC")
-#         with open('BTC_day_strike_mark_data.json', 'w') as f:
-#             json.dump({"data": btc_day}, f, indent=4)
-#         eth_day = main_get_strike_and_mark_price(day_exp_date, "ETH")
-#         with open('ETH_day_strike_mark_data.json', 'w') as f:
-#             json.dump({"data": eth_day}, f, indent=4)
-#         btc_year = main_get_strike_and_mark_price(year_exp_date, "BTC")
-#         with open('BTC_year_strike_mark_data.json', 'w') as f:
-#             json.dump({"data": btc_year}, f, indent=4)         
-#         eth_year = main_get_strike_and_mark_price(year_exp_date, "ETH")
-#         with open('ETH_year_strike_mark_data.json', 'w') as f:
-#             json.dump({"data": eth_year}, f, indent=4)
-#     except Exception as e:
-#         print("Error: ", str(e))
-
 def get_all_strike_mark_data_threading():
     try:
         # Prepare the expiration dates
-        day_exp_date = (datetime.datetime.now() + datetime.timedelta(days=1)).strftime("%d%b%y").upper()
+        # Set 5 PM EST as the cutoff time for today
+        # cutoff_time = now.replace(hour=17, minute=0, second=0, microsecond=0)
+
+        # # Check if current time is past 5 PM EST
+        # if now >= cutoff_time:
+        #     # Use tomorrow's date
+        #     day_exp_date = (now + datetime.timedelta(days=1)).strftime("%d%b%y").upper()
+        # else:
+        #     # Use today's date
+        #     day_exp_date = now.strftime("%d%b%y").upper()
+
+        
+        day_exp_date = (datetime.now() + timedelta(days=1)).strftime("%d%b%y").upper()
+        print(day_exp_date)
         year_exp_date = "27DEC24"
 
         # Define a helper function to handle each call and file writing
@@ -120,7 +119,7 @@ def get_all_strike_mark_data_threading():
                     future.result()  # Wait for each future to complete
                 except Exception as e:
                     print("Error during execution: ", str(e))
-
+        print("Updated strike mark data")
     except Exception as e:
         print("Error: ", str(e))
     

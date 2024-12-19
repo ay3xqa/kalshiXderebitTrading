@@ -30,13 +30,15 @@ def fetch_and_save_kalshi_data():
             eth_year_analyzer.refresh_data()
         else:
             print("No results found.")
+        print("Updated kalshi fetch")
     except Exception as e:
         print(f"Error fetching data: {e}")
 
 
 scheduler = BackgroundScheduler()
-scheduler.add_job(get_all_strike_mark_data_threading, 'interval', minutes=5) 
-scheduler.add_job(fetch_and_save_kalshi_data, 'interval', minutes=5) 
+scheduler.add_job(get_all_strike_mark_data_threading, 'interval', minutes=2) 
+scheduler.add_job(fetch_and_save_kalshi_data, 'interval', minutes=2) 
+scheduler.start()
 
 def initialize_data():
     # First, get the strike mark data needed for analyzers

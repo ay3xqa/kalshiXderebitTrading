@@ -5,7 +5,7 @@ from scipy.integrate import quad
 import json
 
 # Load the data from strike_mark_data.json
-with open('ETH_year_strike_mark_data.json', 'r') as f:
+with open('BTC_day_strike_mark_data.json', 'r') as f:
     data = json.load(f)
 
 data_points = data.get("data", [])
