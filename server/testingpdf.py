@@ -5,20 +5,8 @@ from scipy.integrate import quad
 import json
 
 # Load the data from strike_mark_data.json
-with open('strike_mark_data.json', 'r') as f:
-    data = json.load(f)
-
-with open('ETH_day_strike_mark_data.json', 'r') as f:
-    eth_day_data = json.load(f)
-
 with open('BTC_day_strike_mark_data.json', 'r') as f:
-    btc_day_data = json.load(f)
-
-with open('BTC_year_strike_mark_data.json', 'r') as f:
-    btc_year_data = json.load(f)
-
-with open('ETH_year_strike_mark_data.json', 'r') as f:
-    eth_year_data = json.load(f)
+    data = json.load(f)
 
 data_points = data.get("data", [])
 
@@ -36,33 +24,33 @@ y_spline_der2_clipped = np.clip(y_spline_der2, a_min=0, a_max=None)
 
 
 # Plot spline -> only for backend visuals; not sent to frontend
-# plt.figure(figsize=(18, 6))
-# plt.subplot(1, 3, 1)
-# plt.scatter(x, y, color='red', label='Data Points')
-# plt.plot(x_range, y_spline, color='blue', label='Smoothing Spline')
-# plt.xlabel('x')
-# plt.ylabel('y')
-# plt.title('Smoothing Spline')
-# plt.legend()
+plt.figure(figsize=(18, 6))
+plt.subplot(1, 3, 1)
+plt.scatter(x, y, color='red', label='Data Points')
+plt.plot(x_range, y_spline, color='blue', label='Smoothing Spline')
+plt.xlabel('x')
+plt.ylabel('y')
+plt.title('Smoothing Spline')
+plt.legend()
 
-# # Plot first derivative
-# plt.subplot(1, 3, 2)
-# plt.plot(x_range, y_spline_der1, color='green', label="1st Derivative")
-# plt.xlabel('x')
-# plt.ylabel('y\'')
-# plt.title('First Derivative')
-# plt.legend()
+# Plot first derivative
+plt.subplot(1, 3, 2)
+plt.plot(x_range, y_spline_der1, color='green', label="1st Derivative")
+plt.xlabel('x')
+plt.ylabel('y\'')
+plt.title('First Derivative')
+plt.legend()
 
-# # Plot second derivative
-# plt.subplot(1, 3, 3)
-# plt.plot(x_range, y_spline_der2_clipped, color='purple', label="2nd Derivative")
-# plt.xlabel('x')
-# plt.ylabel('y\'\'')
-# plt.title('Second Derivative')
-# plt.legend()
+# Plot second derivative
+plt.subplot(1, 3, 3)
+plt.plot(x_range, y_spline_der2_clipped, color='purple', label="2nd Derivative")
+plt.xlabel('x')
+plt.ylabel('y\'\'')
+plt.title('Second Derivative')
+plt.legend()
 
-# plt.tight_layout()
-# plt.show()
+plt.tight_layout()
+plt.show()
 
 second_derivative = spline.derivative(n=2)
 first_derivative = second_derivative.antiderivative(n=1)
@@ -119,3 +107,5 @@ def get_graph_data():
         }
     }
     return data
+
+print(get_pdf_probability_of_gte(4500))
