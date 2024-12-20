@@ -11,6 +11,8 @@ Setup
 5. `pip install -r requirements.txt`: to install dependencies from `requirements.txt` in the `server` directory
 6. `export KALSHI_ACCESS_KEY=<your_key>`: to set your kalshi access key as an envrionment variable
 7. Name your .key file `kalshi-key.key` and place it in the `server` directory
+8. Navigate to `client` directory
+9. `npm install`: install npm packages
 
 Note: use pip3 or python3 in place of pip and python if neccessary
 
