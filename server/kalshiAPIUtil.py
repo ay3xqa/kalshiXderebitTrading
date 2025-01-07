@@ -1,14 +1,15 @@
 from kalshiAuth import retrieve_auth_header
+from s3_update_util import update_local_csv
 import requests
 import datetime
 
 method = "GET"
 base_url = 'https://api.elections.kalshi.com'
 path = '/trade-api/v2/markets'
-headers = retrieve_auth_header(path=path, method_type=method)
 
 def get_kalshi_max_year_json(currency, SMA):
     market_params = {'series_ticker':"KX"+currency+"MAXY"}
+    headers = retrieve_auth_header(path=path, method_type=method)
     response = requests.get(base_url+path, headers=headers, params=market_params)
     valid_currency = {"BTC", "ETH"}
     if currency not in valid_currency:
@@ -53,6 +54,7 @@ def get_kalshi_max_day_json(currency, SMA):
 
     print(f"KX{currency}D-{formatted_date}17")
     market_params = {'event_ticker':f"KX{currency}D-{formatted_date}17"}
+    headers = retrieve_auth_header(path=path, method_type=method)
     response = requests.get(base_url+path, headers=headers, params=market_params)
     valid_currency = {"BTC", "ETH"}
     if currency not in valid_currency:
@@ -75,6 +77,12 @@ def get_kalshi_max_day_json(currency, SMA):
                 mkt["yes_prob"] = SMA.get_pdf_probability_of_gte(mkt["target_price"])
                 mkt["no_price"] = market["no_ask"]
                 mkt["no_prob"] = SMA.get_pdf_probability_of_lte(mkt["target_price"])
+
+                if currency == "BTC":
+                    timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                    update_local_csv(timestamp, "BTC", "Daily", "No", mkt["target_price"], mkt["no_prob"], mkt["no_price"])
+                    update_local_csv(timestamp, "BTC", "Daily", "Yes", mkt["target_price"], mkt["yes_prob"], mkt["yes_price"])
+
                 market_data.append(mkt)
         sorted_market_data = sorted(market_data, key=lambda x: x['target_price'])
         data["market_data"] = sorted_market_data

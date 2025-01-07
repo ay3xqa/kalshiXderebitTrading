@@ -9,7 +9,7 @@ export default function Dashboard() {
   const fetchKalshiJson = async () => {
     try {
       const response = await axios.get(
-        `http://127.0.0.1:5000/get_all_kalshi_markets_json`
+        `http://127.0.0.1:5001/get_all_kalshi_markets_json`
       );
       // console.log(response.data); // Log the data to inspect the structure
       setKalshiData(response.data.data.map((market, index) => {

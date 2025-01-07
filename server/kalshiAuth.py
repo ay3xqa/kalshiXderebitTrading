@@ -32,7 +32,7 @@ def load_private_key_from_file(file_path):
         )
     return private_key
 
-def retrieve_auth_header(path):
+def retrieve_auth_header(path, method_type):
     # Get the current time
     current_time = datetime.datetime.now()
 

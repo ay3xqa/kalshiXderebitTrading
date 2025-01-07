@@ -46,7 +46,7 @@ def fetch_instruments(exp_date, currency):
     if response.status_code == 200:
         data = response.json()
         for res in data["result"]:
-            if exp_date in res["instrument_name"] and res["option_type"] == "call":
+            if f"-{exp_date}" in res["instrument_name"] and res["option_type"] == "call":
                 options.append((res["instrument_name"], res["strike"]))
         return options
     else:
@@ -93,9 +93,9 @@ def get_all_strike_mark_data_threading():
         #     day_exp_date = now.strftime("%d%b%y").upper()
 
         
-        day_exp_date = (datetime.now() + timedelta(days=1)).strftime("%d%b%y").upper()
+        day_exp_date = (datetime.now() + timedelta(days=1)).strftime("%-d%b%y").upper()
         print(day_exp_date)
-        year_exp_date = "27DEC24"
+        year_exp_date = "26DEC25"
 
         # Define a helper function to handle each call and file writing
         def process_data(exp_date, currency, filename):
