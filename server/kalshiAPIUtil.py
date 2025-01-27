@@ -28,10 +28,10 @@ def get_kalshi_max_year_json(currency, SMA):
                 target_price = int(market["floor_strike"]+0.01)
                 mkt["event_ticker"] = market["ticker"]
                 mkt["target_price"] = int(target_price)
-                mkt["yes_price"] = market["yes_ask"]
-                mkt["yes_prob"] = SMA.get_pdf_probability_of_gte(mkt["target_price"])
                 mkt["no_price"] = market["no_ask"]
-                mkt["no_prob"] = SMA.get_pdf_probability_of_lte(mkt["target_price"])
+                mkt["no_prob"] = SMA.integrate_pdf(mkt["target_price"])
+                mkt["yes_price"] = market["yes_ask"]
+                mkt["yes_prob"] = 100-mkt["no_prob"]
                 market_data.append(mkt)
         sorted_market_data = sorted(market_data, key=lambda x: x['target_price'])
         data["market_data"] = sorted_market_data
@@ -73,10 +73,10 @@ def get_kalshi_max_day_json(currency, SMA):
                 mkt = {}
                 mkt["event_ticker"] = market["ticker"]
                 mkt["target_price"] = int(market["floor_strike"]+0.01)
-                mkt["yes_price"] = market["yes_ask"]
-                mkt["yes_prob"] = SMA.get_pdf_probability_of_gte(mkt["target_price"])
                 mkt["no_price"] = market["no_ask"]
-                mkt["no_prob"] = SMA.get_pdf_probability_of_lte(mkt["target_price"])
+                mkt["no_prob"] = SMA.integrate_pdf(mkt["target_price"])
+                mkt["yes_price"] = market["yes_ask"]
+                mkt["yes_prob"] = 100-mkt["no_prob"]
 
                 if currency == "BTC":
                     timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
