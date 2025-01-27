@@ -3,7 +3,7 @@ from deribitAPIUtil import main_get_strike_and_mark_price, get_all_strike_mark_d
 from kalshiAPIUtil import get_kalshi_max_year_json, get_kalshi_max_day_json
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
-from StrikeMarkAnalyzer import StrikeMarkAnalyzer
+from univariateSplineAnalyzer import UnivariateSplineAnalyzer
 from flask_cors import CORS
 from s3_update_util import merge_and_upload_to_s3
 import os
@@ -29,10 +29,10 @@ def initialize_data():
     get_all_strike_mark_data_threading()
 
     # Instantiate analyzers
-    btc_day_analyzer = StrikeMarkAnalyzer("BTC", "day")
-    eth_day_analyzer = StrikeMarkAnalyzer("ETH", "day")
-    btc_year_analyzer = StrikeMarkAnalyzer("BTC", "year")
-    eth_year_analyzer = StrikeMarkAnalyzer("ETH", "year")
+    btc_day_analyzer = UnivariateSplineAnalyzer("BTC", "day")
+    eth_day_analyzer = UnivariateSplineAnalyzer("ETH", "day")
+    btc_year_analyzer = UnivariateSplineAnalyzer("BTC", "year")
+    eth_year_analyzer = UnivariateSplineAnalyzer("ETH", "year")
 
     # Fetch initial Kalshi data after analyzers are ready
     fetch_and_save_kalshi_data()
@@ -71,8 +71,17 @@ def fetch_and_save_kalshi_data():
 scheduler = BackgroundScheduler()
 
 # Add periodic jobs
-scheduler.add_job(get_all_strike_mark_data_threading, 'interval', minutes=2)
-scheduler.add_job(fetch_and_save_kalshi_data, 'interval', minutes=2)
+# scheduler.add_job(get_all_strike_mark_data_threading, 'interval', minutes=2)
+# scheduler.add_job(fetch_and_save_kalshi_data, 'interval', minutes=2)
+scheduler.add_job(
+    get_all_strike_mark_data_threading,
+    CronTrigger(minute='*/2', hour='9-16', timezone='US/Eastern')
+)
+
+scheduler.add_job(
+    fetch_and_save_kalshi_data,
+    CronTrigger(minute='*/2', hour='9-16', timezone='US/Eastern')
+)
 
 # Set up cron job for S3 merging and uploading
 cron_trigger = CronTrigger(
