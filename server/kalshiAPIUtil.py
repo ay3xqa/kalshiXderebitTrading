@@ -80,16 +80,19 @@ def get_kalshi_max_day_json(currency, SMA):
                 mkt["yes_price"] = market["yes_ask"]
                 mkt["yes_prob"] = 100-mkt["no_prob"]
 
-                # Check for price differences (adjust thresholds as needed)
-                price_diff_threshold = 10  # 10% difference
-                
-                if abs(mkt["no_price"] - mkt["no_prob"]) > price_diff_threshold:
+
+                # entry condition:
+                # model_probability > kalshi_price + 10 AND kalshi_price > 50 AND kalshi_price < 90
+                price_diff_threshold = 10
+                floor_price = 50
+
+                if mkt["no_prob"] > mkt["no_price"] + price_diff_threshold and mkt["no_price"] > floor_price:
                     opportunities.append(
                         f"Price difference detected for {currency} at ${mkt['target_price']}:\n"
                         f"NO Market Price: {mkt['no_price']}% vs Model Probability: {mkt['no_prob']}%"
                     )
-                
-                if abs(mkt["yes_price"] - mkt["yes_prob"]) > price_diff_threshold:
+
+                if mkt["yes_prob"] > mkt["yes_price"] + price_diff_threshold and mkt["yes_price"] > floor_price:
                     opportunities.append(
                         f"Price difference detected for {currency} at ${mkt['target_price']}:\n"
                         f"YES Market Price: {mkt['yes_price']}% vs Model Probability: {mkt['yes_prob']}%"
